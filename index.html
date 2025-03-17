@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>גן עלמה - דיווח שעות</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Caveat:wght@400&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7e8f0;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+            background-image: url('https://img.freepik.com/premium-vector/seamless-pattern-with-butterflies_225543-159.jpg');
+            background-size: 300px;
+            background-repeat: repeat;
+            background-attachment: fixed;
+            opacity: 0.9;
+        }
+        .container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #6b9ac4;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .button-group {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 5px;
+            margin-bottom: -5px;
+        }
+        .button-group::-webkit-scrollbar {
+            display: none;
+        }
+        .button-group {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .button-group input[type="button"] {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 12px;
+            font-size: 14px;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+        .month-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 10px;
+            flex-wrap: nowrap;
+        }
+        .month-controls button {
+            padding: 8px 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .month-display {
+            color: #6b9ac4;
+            padding: 5px 10px;
+            border-radius: 10px;
+            border: 2px solid #f4a8b1;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+        .child-buttons {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 10px;
+        }
+        .child-buttons::-webkit-scrollbar {
+            display: none;
+        }
+        .child-buttons {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .child-buttons .child-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .child-buttons button {
+            background-color: #f4a8b1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            font-family: 'Indie Flower', 'Caveat', cursive;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .child-buttons button:hover {
+            background-color: #e88c96;
+        }
+        .child-buttons button.selected {
+            background-color: #d66a78;
+        }
+        .current-child {
+            color: #6b9ac4;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        button, input[type="button"] {
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #97d8c4;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover, input[type="button"]:hover {
+            background-color: #7bc4ae;
+        }
+        #removeChildToggleBtn.active, #editChildToggleBtn.active {
+            background-color: #5a9e87; /* ירוק כהה יותר */
+        }
+        .child-table {
+            width: 100%;
+            max-width: calc(100% - 20px);
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 2px solid #6b9ac4;
+            table-layout: auto;
+            box-sizing: border-box;
+        }
+        .child-table th, .child-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #e0e5eb;
+            word-wrap: break-word;
+        }
+        .child-table th {
+            background-color: #eff7f6;
+            color: #6b9ac4;
+        }
+        .child-table th:nth-child(1), .child-table td:nth-child(1) {
+            width: 1ch;
+            min-width: 10px;
+        }
+        .child-table th:nth-child(2), .child-table td:nth-child(2) {
+            width: 5ch;
+            min-width: 30px;
+        }
+        .child-table th:nth-child(3), .child-table td:nth-child(3) {
+            width: 5ch;
+            min-width: 80px;
+        }
+        .child-table th:nth-child(4), .child-table td:nth-child(4) {
+            width: 5ch;
+            min-width: 80px;
+        }
+        .child-table th:nth-child(5), .child-table td:nth-child(5) {
+            width: 5ch;
+            max-width: 60px;
+            min-width: 40px;
+            white-space: normal;
+        }
+        input[type="time"] {
+            padding: 5px;
+            border: 1px solid #e0e5eb;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            direction: ltr;
+            text-align: right;
+            font-size: 14px;
+            height: 30px;
+            step: 60;
+        }
+        input[type="time"]:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+        .total-hours {
+            text-align: right;
+            font-weight: bold;
+            color: #6b9ac4;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        .total-hours .total-hours-text {
+            display: block;
+            margin-bottom: 5px;
+            text-align: right;
+        }
+        .total-hours .payment-details {
+            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            width: 100%;
+        }
+        .total-hours .payment-details span,
+        .total-hours .payment-details label {
+            color: #6b9ac4;
+            font-weight: bold;
+            text-align: right;
+            width: 100%;
+        }
+        .total-hours .payment-details input[type="checkbox"] {
+            margin-left: 5px;
+        }
+        .total-hours .payment-details select {
+            padding: 5px 10px;
+            border: 2px solid #6b9ac4;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #6b9ac4;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .total-hours .payment-details select:hover {
+            border-color: #5a89b0;
+            background-color: #eff7f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .total-hours .payment-details select:focus {
+            outline: none;
+            border-color: #5a89b0;
+            box-shadow: 0 0 5px rgba(107, 154, 196, 0.5);
+        }
+        .total-hours .payment-details select option {
+            background-color: #ffffff;
+            color: #6b9ac4;
+            font-weight: bold;
+            padding: 5px;
+        }
+        .total-hours .payment-details input[type="number"] {
+            padding: 5px;
+            border: 2px solid #6b9ac4;
+            border-radius: 5px;
+            background-color: #eff7f6;
+            color: #6b9ac4;
+            font-weight: bold;
+            width: 100px;
+            text-align: center;
+        }
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .share-buttons button {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+        .alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            text-align: center;
+            color: #e63946;
+            border: 2px solid #e63946;
+            font-weight: bold;
+        }
+        .summary-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+            max-height: 90vh;
+            width: 90%;
+            max-width: 800px;
+            overflow-y: auto;
+            text-align: center;
+            border: 2px solid #6b9ac4;
+        }
+        .summary-window h2 {
+            color: #6b9ac4;
+            margin-top: 0;
+            white-space: nowrap;
+            font-size: 24px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            border: 2px solid #6b9ac4;
+        }
+        .summary-table th, .summary-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #e0e5eb;
+            color: #6b9ac4;
+            font-weight: bold;
+        }
+        .summary-table th {
+            background-color: #eff7f6;
+        }
+        .summary-totals {
+            text-align: right;
+            color: #6b9ac4;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .summary-totals p {
+            margin: 5px 0;
+        }
+        .summary-window button {
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #f4a8b1;
+            color: white;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        .summary-window button:hover {
+            background-color: #e88c96;
+        }
+        .modal {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -30%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 1001;
+            display: none;
+            text-align: center;
+            max-width: 300px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        .modal h3 {
+            color: #6b9ac4;
+            margin: 0 0 15px 0;
+        }
+        .modal input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e5eb;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: #f0f4f8;
+            color: #6b9ac4;
+            font-size: 14px;
+        }
+        .modal button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .confirmation-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 1002;
+            display: none;
+            text-align: center;
+            max-width: 300px;
+            color: #6b9ac4;
+        }
+        .confirmation-modal p {
+            margin: 0 0 15px 0;
+        }
+        .confirmation-modal button {
+            padding: 12px 24px;
+            font-size: 18px;
+            margin: 5px;
+        }
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+            .button-group {
+                gap: 5px;
+            }
+            .month-controls {
+                gap: 5px;
+                flex-wrap: nowrap;
+            }
+            .child-table {
+                font-size: 12px;
+            }
+            .child-table th, .child-table td {
+                padding: 5px;
+            }
+            button, input[type="button"] {
+                font-size: 14px;
+            }
+            .child-buttons button {
+                font-size: 16px;
+            }
+            .modal {
+                top: 20%;
+                transform: translate(-50%, -20%);
+                width: 90%;
+            }
+            .summary-window {
+                width: 90%;
+            }
+            .summary-table {
+                font-size: 12px;
+            }
+            .summary-table th, .summary-table td {
+                padding: 5px;
+            }
+            .total-hours .payment-details {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="container">
+        <h1>גן עלמה - דיווח שעות</h1>
+        <div class="controls">
+            <div class="button-group">
+                <input type="button" value="הוסף ילד" onclick="showAddChildModal()">
+                <input type="button" value="הסר ילד" id="removeChildToggleBtn" onclick="toggleRemoveMode()">
+                <input type="button" value="עדכן ילד" id="editChildToggleBtn" onclick="toggleEditButtons()">
+                <input type="button" value="סיכום" style="text-align: center;" onclick="showSummary()">
+            </div>
+            <div class="month-controls">
+                <button onclick="changeMonth(-1)">חודש קודם</button>
+                <span id="currentMonth" class="month-display"></span>
+                <button onclick="changeMonth(1)">חודש הבא</button>
+            </div>
+        </div>
+        <div class="child-buttons" id="childButtons"></div>
+        <div class="current-child" id="currentChild"></div>
+        <div id="childTableContainer"></div>
+        <div class="total-hours" id="totalHours"></div>
+        <div class="share-buttons" id="shareButtons"></div>
+        <div class="alert" id="alertBox"></div>
+        <div class="summary-window" id="summaryWindow">
+            <h2 id="summaryTitle"></h2>
+            <div id="summaryContent"></div>
+            <div id="summaryTotals"></div>
+            <button onclick="closeSummary()">סגור</button>
+        </div>
+        <div class="modal" id="addChildModal">
+            <h3>הוספת ילד חדש</h3>
+            <input type="text" id="childNameInput" placeholder="הזן שם הילד" required>
+            <button onclick="addChild()">הוסף</button>
+            <button onclick="closeModal('addChildModal')">בטל</button>
+        </div>
+        <div class="modal" id="editChildModal">
+            <h3>עדכון שם ילד</h3>
+            <input type="text" id="editChildNameInput" placeholder="הזן שם חדש" required>
+            <button onclick="editChild()">שמור</button>
+            <button onclick="closeModal('editChildModal')">בטל</button>
+        </div>
+        <div class="confirmation-modal" id="firstConfirmationModal">
+            <h3>אישור הסרה</h3>
+            <p id="firstConfirmationText">האם להסיר את הילד?</p>
+            <button onclick="showSecondConfirmation()">כן</button>
+            <button onclick="closeConfirmationModal('firstConfirmationModal')">לא</button>
+        </div>
+        <div class="confirmation-modal" id="secondConfirmationModal">
+            <h3>אזהרה חמורה</h3>
+            <p>פעולה זו בלתי הפיכה! האם להמשיך?</p>
+            <button onclick="confirmRemove()">כן</button>
+            <button onclick="closeConfirmationModal('secondConfirmationModal')">לא</button>
+        </div>
+    </div>
+
+    <script>
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let childrenList = JSON.parse(localStorage.getItem('childrenList')) || [];
+        let selectedChild = '';
+        let selectedChildToRemove = '';
+        let selectedChildToEdit = '';
+        let removeModeActive = false;
+        let editButtonsVisible = false;
+        const today = new Date();
+
+        function init() {
+            console.log("Initializing...");
+            try {
+                childrenList = childrenList.map(child => {
+                    if (!child.data || typeof child.data !== 'object') {
+                        child.data = {};
+                    }
+                    if (child.payment && (child.payment.paid !== undefined || child.payment.method !== '' || child.payment.amountPaid !== 0)) {
+                        for (let year in child.data) {
+                            for (let month in child.data[year]) {
+                                if (!child.data[year][month].payment) {
+                                    child.data[year][month].payment = {
+                                        paid: child.payment.paid || false,
+                                        method: child.payment.method || '',
+                                        amountPaid: child.payment.amountPaid || 0
+                                    };
+                                }
+                            }
+                        }
+                        delete child.payment;
+                    }
+                    return child;
+                });
+
+                if (childrenList.length === 0) {
+                    console.log("No children found, adding default children...");
+                    childrenList = [
+                        { name: "ילד 1", data: {} },
+                        { name: "ילד 2", data: {} }
+                    ];
+                    childrenList.forEach(child => {
+                        if (!child.data[currentYear]) child.data[currentYear] = {};
+                        if (!child.data[currentYear][currentMonth]) {
+                            child.data[currentYear][currentMonth] = { payment: { paid: false, method: '', amountPaid: 0 } };
+                        }
+                    });
+                    saveData();
+                }
+                updateMonthDisplay();
+                updateChildButtons();
+                if (childrenList.length > 0) {
+                    selectedChild = childrenList[0].name;
+                    showChildTable(selectedChild);
+                } else {
+                    console.log("No children to display.");
+                }
+            } catch (error) {
+                console.error("Error during initialization:", error);
+                showAlert("אירעה שגיאה בטעינת האתר. אנא נסה שוב.");
+            }
+        }
+
+        function showAddChildModal() {
+            console.log("Opening Add Child Modal");
+            document.getElementById('modalOverlay').style.display = 'block';
+            const modal = document.getElementById('addChildModal');
+            modal.style.display = 'block';
+            document.getElementById('childNameInput').focus();
+        }
+
+        function addChild() {
+            console.log("Adding child...");
+            const name = document.getElementById('childNameInput').value.trim();
+            if (!name) {
+                showAlert('יש להזין שם ילד');
+                return;
+            }
+            if (childrenList.some(child => child.name === name)) {
+                showAlert('שם הילד כבר קיים');
+                return;
+            }
+            childrenList.push({ name: name, data: {} });
+            const child = childrenList.find(c => c.name === name);
+            if (!child.data[currentYear]) child.data[currentYear] = {};
+            if (!child.data[currentYear][currentMonth]) {
+                child.data[currentYear][currentMonth] = { payment: { paid: false, method: '', amountPaid: 0 } };
+            }
+            updateChildButtons();
+            selectedChild = name;
+            showChildTable(name);
+            saveData();
+            closeModal('addChildModal');
+        }
+
+        function toggleRemoveMode() {
+            console.log("Toggling remove mode...");
+            removeModeActive = !removeModeActive;
+            const removeBtn = document.getElementById('removeChildToggleBtn');
+            if (removeModeActive) {
+                removeBtn.classList.add('active');
+                if (editButtonsVisible) toggleEditButtons(); // ביטול מצב עריכה אם פעיל
+            } else {
+                removeBtn.classList.remove('active');
+            }
+            updateChildButtons();
+        }
+
+        function toggleEditButtons() {
+            console.log("Toggling edit buttons...");
+            editButtonsVisible = !editButtonsVisible;
+            const editBtn = document.getElementById('editChildToggleBtn');
+            if (editButtonsVisible) {
+                editBtn.classList.add('active');
+                if (removeModeActive) toggleRemoveMode(); // ביטול מצב הסרה אם פעיל
+            } else {
+                editBtn.classList.remove('active');
+            }
+            updateChildButtons();
+        }
+
+        function showEditChildModal(childName) {
+            console.log(`Showing edit modal for ${childName}`);
+            selectedChildToEdit = childName;
+            document.getElementById('modalOverlay').style.display = 'block';
+            const modal = document.getElementById('editChildModal');
+            document.getElementById('editChildNameInput').value = childName;
+            modal.style.display = 'block';
+            document.getElementById('editChildNameInput').focus();
+        }
+
+        function editChild() {
+            console.log(`Editing child name for ${selectedChildToEdit}`);
+            const newName = document.getElementById('editChildNameInput').value.trim();
+            if (!newName) {
+                showAlert('יש להזין שם ילד');
+                return;
+            }
+            if (newName === selectedChildToEdit) {
+                closeModal('editChildModal');
+                return;
+            }
+            if (childrenList.some(child => child.name === newName)) {
+                showAlert('שם הילד כבר קיים');
+                return;
+            }
+            const childIndex = childrenList.findIndex(child => child.name === selectedChildToEdit);
+            if (childIndex !== -1) {
+                childrenList[childIndex].name = newName;
+                if (selectedChild === selectedChildToEdit) {
+                    selectedChild = newName;
+                }
+                updateChildButtons();
+                if (selectedChild) showChildTable(selectedChild);
+                saveData();
+                closeModal('editChildModal');
+                showAlert(`שם הילד עודכן ל-${newName} בהצלחה!`);
+                toggleEditButtons(); // חזרה למצב ברירת מחדל
+            }
+        }
+
+        function showFirstConfirmation(childName) {
+            console.log(`Showing first confirmation for ${childName}`);
+            selectedChildToRemove = childName;
+            document.getElementById('modalOverlay').style.display = 'block';
+            const modal = document.getElementById('firstConfirmationModal');
+            document.getElementById('firstConfirmationText').textContent = `האם להסיר את ${childName}?`;
+            modal.style.display = 'block';
+        }
+
+        function showSecondConfirmation() {
+            console.log("Showing second confirmation...");
+            closeConfirmationModal('firstConfirmationModal');
+            const modal = document.getElementById('secondConfirmationModal');
+            modal.style.display = 'block';
+        }
+
+        function confirmRemove() {
+            console.log(`Confirming removal of ${selectedChildToRemove}`);
+            if (selectedChildToRemove) {
+                childrenList = childrenList.filter(child => child.name !== selectedChildToRemove);
+                if (selectedChild === selectedChildToRemove) {
+                    selectedChild = childrenList.length > 0 ? childrenList[0].name : '';
+                    if (selectedChild) {
+                        showChildTable(selectedChild);
+                    } else {
+                        document.getElementById('childTableContainer').innerHTML = '';
+                        document.getElementById('totalHours').textContent = '';
+                        document.getElementById('shareButtons').innerHTML = '';
+                        document.getElementById('currentChild').textContent = '';
+                    }
+                }
+                updateChildButtons();
+                saveData();
+                closeConfirmationModal('secondConfirmationModal');
+                showAlert(`הילד ${selectedChildToRemove} הוסר בהצלחה!`);
+                selectedChildToRemove = '';
+                toggleRemoveMode(); // חזרה למצב ברירת מחדל
+            }
+        }
+
+        function closeModal(modalId) {
+            console.log(`Closing modal: ${modalId}`);
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId !== 'firstConfirmationModal' && modalId !== 'secondConfirmationModal') {
+                document.getElementById('modalOverlay').style.display = 'none';
+            }
+        }
+
+        function closeConfirmationModal(modalId) {
+            console.log(`Closing confirmation modal: ${modalId}`);
+            document.getElementById(modalId).style.display = 'none';
+            if (!document.querySelector('.confirmation-modal[style*="display: block"]')) {
+                document.getElementById('modalOverlay').style.display = 'none';
+            }
+        }
+
+        function updateChildButtons() {
+            console.log("Updating child buttons...");
+            try {
+                const buttons = document.getElementById('childButtons');
+                buttons.innerHTML = '';
+                childrenList.forEach(child => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'child-wrapper';
+                    
+                    const btn = document.createElement('button');
+                    btn.textContent = child.name;
+                    btn.className = child.name === selectedChild ? 'selected' : '';
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (removeModeActive) {
+                            showFirstConfirmation(child.name);
+                        } else if (editButtonsVisible) {
+                            showEditChildModal(child.name);
+                        } else {
+                            showChildTable(child.name);
+                        }
+                    };
+                    
+                    wrapper.appendChild(btn);
+                    buttons.appendChild(wrapper);
+                });
+            } catch (error) {
+                console.error("Error updating child buttons:", error);
+                showAlert("שגיאה בעדכון כפתורי הילדים.");
+            }
+        }
+
+        function updateMonthDisplay() {
+            console.log("Updating month display...");
+            const monthNames = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 
+                              'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+            document.getElementById('currentMonth').textContent = 
+                `${monthNames[currentMonth]} ${currentYear}`;
+        }
+
+        function changeMonth(delta) {
+            console.log(`Changing month by ${delta}`);
+            currentMonth += delta;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            updateMonthDisplay();
+            if (selectedChild) showChildTable(selectedChild);
+        }
+
+        function showChildTable(childName) {
+            console.log(`Showing table for child: ${childName}`);
+            try {
+                selectedChild = childName;
+                document.getElementById('currentChild').textContent = `דיווח עבור: ${childName}`;
+                const container = document.getElementById('childTableContainer');
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                const isFutureMonth = (currentYear > today.getFullYear()) || 
+                                    (currentYear === today.getFullYear() && currentMonth > today.getMonth());
+                
+                const child = childrenList.find(c => c.name === childName);
+                if (!child.data[currentYear]) {
+                    child.data[currentYear] = {};
+                }
+                if (!child.data[currentYear][currentMonth]) {
+                    child.data[currentYear][currentMonth] = { payment: { paid: false, method: '', amountPaid: 0 } };
+                }
+
+                let html = `<table class="child-table"><tr><th>יום</th><th>תאריך</th><th>כניסה</th><th>יציאה</th><th>סה"כ<br>שעות</th></tr>`;
+                let totalMinutes = 0;
+                const daysOfWeek = ['א', 'ב', 'ג', 'ד', 'ה'];
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(currentYear, currentMonth, day);
+                    const dayOfWeekIndex = date.getDay();
+                    const dayOfWeek = daysOfWeek[dayOfWeekIndex % 5];
+
+                    if (dayOfWeekIndex === 5 || dayOfWeekIndex === 6) {
+                        continue;
+                    }
+
+                    const dateStr = `${day.toString().padStart(2, '0')}/${(currentMonth + 1).toString().padStart(2, '0')}`;
+                    const data = child.data[currentYear][currentMonth][day] || {};
+                    let entry = data.entry || '';
+                    let exit = data.exit || '';
+                    if (entry && entry.includes(':')) {
+                        entry = entry.split(':').slice(0, 2).join(':');
+                    }
+                    if (exit && exit.includes(':')) {
+                        exit = exit.split(':').slice(0, 2).join(':');
+                    }
+                    const hours = calculateHours(entry, exit);
+                    totalMinutes += hours ? parseTimeToMinutes(hours) : 0;
+                    const disabled = isFutureMonth ? 'disabled' : '';
+
+                    html += `<tr>
+                        <td>${dayOfWeek}</td>
+                        <td>${dateStr}</td>
+                        <td><input type="time" step="60" value="${entry}" onchange="updateTime('${childName}', ${day}, 'entry', this.value)" ${disabled}></td>
+                        <td><input type="time" step="60" value="${exit}" onchange="updateTime('${childName}', ${day}, 'exit', this.value)" ${disabled}></td>
+                        <td>${hours || ''}</td>
+                    </tr>`;
+                }
+                html += '</table>';
+                container.innerHTML = html;
+
+                const totalCost = (totalMinutes / 60) * 30;
+                const paymentData = child.data[currentYear][currentMonth].payment || { paid: false, method: '', amountPaid: 0 };
+                document.getElementById('totalHours').innerHTML = `
+                    <span class="total-hours-text">סה"כ שעות בחודש: ${formatTime(totalMinutes)}</span>
+                    <div class="payment-details">
+                        <span>סה"כ לתשלום: ${totalCost.toFixed(2)} ש"ח</span>
+                        <label>האם שולם: <input type="checkbox" ${paymentData.paid ? 'checked' : ''} onchange="updatePayment('${childName}', ${currentYear}, ${currentMonth}, 'paid', this.checked)"></label>
+                        <label>כיצד שולם: 
+                            <select onchange="updatePayment('${childName}', ${currentYear}, ${currentMonth}, 'method', this.value)">
+                                <option value="" ${!paymentData.method ? 'selected' : ''}>בחר שיטת תשלום</option>
+                                <option value="מזומן" ${paymentData.method === 'מזומן' ? 'selected' : ''}>מזומן</option>
+                                <option value="ביט" ${paymentData.method === 'ביט' ? 'selected' : ''}>ביט</option>
+                                <option value="פייבוקס" ${paymentData.method === 'פייבוקס' ? 'selected' : ''}>פייבוקס</option>
+                                <option value="העברה בנקאית" ${paymentData.method === 'העברה בנקאית' ? 'selected' : ''}>העברה בנקאית</option>
+                                <option value="צ'ק" ${paymentData.method === "צ'ק" ? 'selected' : ''}>צ'ק</option>
+                            </select>
+                        </label>
+                        <label>כמה שולם: <input type="number" min="0" step="0.01" value="${paymentData.amountPaid || 0}" onchange="updatePayment('${childName}', ${currentYear}, ${currentMonth}, 'amountPaid', this.value)"> <span class="total-cost">ש"ח</span></label>
+                    </div>
+                `;
+
+                const shareButtons = document.getElementById('shareButtons');
+                shareButtons.innerHTML = `
+                    <button onclick="shareViaSMS('${childName}')">שתף ב-SMS</button>
+                    <button onclick="shareViaWhatsApp('${childName}')">שתף ב-WhatsApp</button>
+                `;
+                updateChildButtons();
+            } catch (error) {
+                console.error("Error showing child table:", error);
+                showAlert("שגיאה בטעינת טבלת הילד.");
+            }
+        }
+
+        function updateTime(childName, day, type, value) {
+            console.log(`Updating time for ${childName}, day ${day}, type ${type}`);
+            const child = childrenList.find(c => c.name === childName);
+            if (!child.data[currentYear][currentMonth][day]) {
+                child.data[currentYear][currentMonth][day] = {};
+            }
+            
+            const dayData = child.data[currentYear][currentMonth][day];
+            dayData[type] = value;
+
+            if (type === 'exit' && dayData.entry && value < dayData.entry) {
+                showAlert('שעת היציאה לא יכולה להיות לפני שעת הכניסה');
+                dayData.exit = '';
+                showChildTable(childName);
+                saveData();
+                return;
+            }
+            
+            showChildTable(childName);
+            saveData();
+        }
+
+        function updatePayment(childName, year, month, field, value) {
+            console.log(`Updating payment for ${childName}, year ${year}, month ${month}, field ${field}, value ${value}`);
+            const child = childrenList.find(c => c.name === childName);
+            if (!child.data[year]) child.data[year] = {};
+            if (!child.data[year][month]) child.data[year][month] = { payment: { paid: false, method: '', amountPaid: 0 } };
+            
+            const paymentData = child.data[year][month].payment;
+            if (field === 'paid') {
+                paymentData.paid = value;
+            } else if (field === 'method') {
+                paymentData.method = value;
+            } else if (field === 'amountPaid') {
+                paymentData.amountPaid = parseFloat(value) || 0;
+            }
+            saveData();
+            if (year === currentYear && month === currentMonth) {
+                showChildTable(childName);
+            }
+        }
+
+        function calculateHours(entry, exit) {
+            if (!entry || !exit) return '';
+            const entryMin = parseTimeToMinutes(entry);
+            const exitMin = parseTimeToMinutes(exit);
+            return formatTime(exitMin - entryMin);
+        }
+
+        function parseTimeToMinutes(time) {
+            if (!time) return 0;
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function formatTime(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        }
+
+        function showAlert(message) {
+            console.log(`Showing alert: ${message}`);
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+            setTimeout(() => alertBox.style.display = 'none', 3000);
+        }
+
+        function saveData() {
+            console.log("Saving data to localStorage...");
+            try {
+                localStorage.setItem('childrenList', JSON.stringify(childrenList));
+            } catch (error) {
+                console.error("Error saving data:", error);
+                showAlert("שגיאה בשמירת הנתונים.");
+            }
+        }
+
+        function showSummary() {
+            console.log("Showing summary...");
+            document.getElementById('modalOverlay').style.display = 'block';
+            const summaryWindow = document.getElementById('summaryWindow');
+            const summaryTitle = document.getElementById('summaryTitle');
+            const summaryContent = document.getElementById('summaryContent');
+            const summaryTotals = document.getElementById('summaryTotals');
+            const monthNames = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 
+                              'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+
+            summaryTitle.textContent = `סיכום לחודש ${monthNames[currentMonth]} ${currentYear}`;
+
+            let tableHtml = '<table class="summary-table">';
+            tableHtml += '<tr><th>שם הילד</th><th>סה"כ שעות</th><th>סה"כ לתשלום</th><th>שולם?</th><th>שיטת תשלום</th><th>כמה שולם</th></tr>';
+            
+            let grandTotalMinutes = 0;
+            let grandTotalCost = 0;
+            let grandTotalPaid = 0;
+
+            childrenList.forEach(child => {
+                let childTotalMinutes = 0;
+                if (child.data[currentYear] && child.data[currentYear][currentMonth]) {
+                    for (let day in child.data[currentYear][currentMonth]) {
+                        const { entry, exit } = child.data[currentYear][currentMonth][day];
+                        if (entry && exit) {
+                            const hours = calculateHours(entry, exit);
+                            childTotalMinutes += parseTimeToMinutes(hours);
+                        }
+                    }
+                }
+                const childCost = (childTotalMinutes / 60) * 30;
+                const paymentData = child.data[currentYear][currentMonth]?.payment || { paid: false, method: '', amountPaid: 0 };
+                
+                tableHtml += `<tr>
+                    <td>${child.name}</td>
+                    <td>${formatTime(childTotalMinutes)}</td>
+                    <td>${childCost.toFixed(2)} ש"ח</td>
+                    <td>${paymentData.paid ? 'כן' : 'לא'}</td>
+                    <td>${paymentData.method || '-'}</td>
+                    <td>${paymentData.amountPaid.toFixed(2)} ש"ח</td>
+                </tr>`;
+
+                grandTotalMinutes += childTotalMinutes;
+                grandTotalCost += childCost;
+                grandTotalPaid += paymentData.amountPaid || 0;
+            });
+
+            tableHtml += '</table>';
+            summaryContent.innerHTML = tableHtml;
+
+            summaryTotals.innerHTML = `
+                <div class="summary-totals">
+                    <p><strong>סה"כ לתשלום עבור כל הילדים: ${grandTotalCost.toFixed(2)} ש"ח</strong></p>
+                    <p>כמה שולם בפועל: ${grandTotalPaid.toFixed(2)} ש"ח</p>
+                </div>
+            `;
+
+            summaryWindow.style.display = 'block';
+        }
+
+        function closeSummary() {
+            console.log("Closing summary...");
+            document.getElementById('summaryWindow').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        function generateTableText(childName) {
+            const monthNames = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 
+                              'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+            let text = `📋 *דיווח שעות ל${childName}* - ${monthNames[currentMonth]} ${currentYear}\n\n`;
+            text += `*יום* | *תאריך* | *כניסה* | *יציאה* | *סה"כ שעות*\n`;
+            text += `-------------------------------\n`;
+            let totalMinutes = 0;
+            const daysOfWeek = ['א', 'ב', 'ג', 'ד', 'ה'];
+
+            const child = childrenList.find(c => c.name === childName);
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const dayOfWeekIndex = date.getDay();
+                const dayOfWeek = daysOfWeek[dayOfWeekIndex % 5];
+
+                if (dayOfWeekIndex === 5 || dayOfWeekIndex === 6) {
+                    continue;
+                }
+
+                const dateStr = `${day.toString().padStart(2, '0')}/${(currentMonth + 1).toString().padStart(2, '0')}`;
+                const data = child.data[currentYear]?.[currentMonth]?.[day] || {};
+                const entry = data.entry || '';
+                const exit = data.exit || '';
+                const hours = calculateHours(entry, exit) || '';
+                if (hours) totalMinutes += parseTimeToMinutes(hours);
+                text += `${dayOfWeek} | ${dateStr} | ${entry || '-'} | ${exit || '-'} | ${hours || '-'}\n`;
+            }
+            const totalCost = (totalMinutes / 60) * 30;
+            const paymentData = child.data[currentYear][currentMonth]?.payment || { paid: false, method: '', amountPaid: 0 };
+            text += `-------------------------------\n`;
+            text += `*סה"כ שעות בחודש:* ${formatTime(totalMinutes)}\n`;
+            text += `*סה"כ לתשלום:* ${totalCost.toFixed(2)} ש"ח\n`;
+            text += `*האם שולם:* ${paymentData.paid ? 'כן' : 'לא'}\n`;
+            text += `*כיצד שולם:* ${paymentData.method || '-'}\n`;
+            text += `*כמה שולם:* ${paymentData.amountPaid.toFixed(2)} ש"ח`;
+            return encodeURIComponent(text);
+        }
+
+        function shareViaSMS(childName) {
+            console.log(`Sharing via SMS for ${childName}`);
+            const text = generateTableText(childName);
+            if (navigator.share) {
+                navigator.share({
+                    text: decodeURIComponent(text),
+                }).catch(error => {
+                    console.error('שגיאה בשיתוף SMS:', error);
+                    showAlert('אירעה שגיאה בשיתוף');
+                });
+            } else {
+                const phone = prompt('הזן מספר טלפון לשליחה ב-SMS (בפורמט 972xxxxxxxxx):');
+                if (phone) {
+                    const url = `sms:${phone}?body=${text}`;
+                    window.open(url);
+                }
+            }
+        }
+
+        async function shareViaWhatsApp(childName) {
+            console.log(`Sharing via WhatsApp for ${childName}`);
+            const tableContainer = document.getElementById('childTableContainer');
+            const totalHours = document.getElementById('totalHours');
+            const child = childrenList.find(c => c.name === childName);
+            const title = `דיווח שעות ל${childName} - ${document.getElementById('currentMonth').textContent}`;
+            const paymentData = child.data[currentYear][currentMonth]?.payment || { paid: false, method: '', amountPaid: 0 };
+
+            const tempContainer = document.createElement('div');
+            tempContainer.style.backgroundColor = '#fff';
+            tempContainer.style.padding = '10px';
+            tempContainer.style.borderRadius = '10px';
+            tempContainer.style.width = 'fit-content';
+            tempContainer.style.direction = 'rtl';
+            tempContainer.innerHTML = `
+                <h2 style="color: #6b9ac4; text-align: center;">${title}</h2>
+                ${tableContainer.innerHTML}
+                <div style="color: #6b9ac4; font-weight: bold; text-align: right; display: flex; flex-direction: column; gap: 5px;">
+                    <span>${totalHours.querySelector('.total-hours-text').textContent}</span>
+                    <span>${totalHours.querySelector('.payment-details span').textContent}</span>
+                    <span>האם שולם: ${paymentData.paid ? 'כן' : 'לא'}</span>
+                    <span>כיצד שולם: ${paymentData.method || '-'}</span>
+                    <span>כמה שולם: ${paymentData.amountPaid.toFixed(2)} ש"ח</span>
+                </div>
+            `;
+            document.body.appendChild(tempContainer);
+
+            try {
+                const canvas = await html2canvas(tempContainer);
+                const imageData = canvas.toDataURL('image/png');
+
+                if (navigator.share) {
+                    const blob = await (await fetch(imageData)).blob();
+                    const file = new File([blob], `${childName}_hours.png`, { type: 'image/png' });
+                    await navigator.share({
+                        files: [file],
+                        title: title,
+                    });
+                } else {
+                    const link = document.createElement('a');
+                    link.href = imageData;
+                    link.download = `${childName}_hours.png`;
+                    link.click();
+                    showAlert('שמור את התמונה ושלח אותה ידנית ב-WhatsApp');
+                }
+            } catch (error) {
+                console.error('שגיאה בשיתוף:', error);
+                showAlert('אירעה שגיאה בשיתוף התמונה');
+            } finally {
+                document.body.removeChild(tempContainer);
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
