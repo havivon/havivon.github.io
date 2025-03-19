@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חלוקת פרקי תהילים</title>
+    <style>
+        body {
+            font-family: 'Frank Ruhl Libre', serif;
+            background-color: #f5f1e9;
+            color: #4a2c1b;
+            text-align: right;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .bsd {
+            font-size: 18px;
+            color: #8b5a2b;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .dedication {
+            font-size: 18px;
+            color: #8b5a2b;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .no-share {
+            /* מחלקה זו תשמש להסתרת האלמנט בזמן שיתוף */
+        }
+        .header {
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #8b5a2b;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .text-input {
+            width: 90%;
+            max-width: 600px;
+            height: 100px;
+            margin: 0 auto 20px;
+            padding: 10px;
+            border: 2px solid #d4a373;
+            border-radius: 5px;
+            resize: vertical;
+            font-family: 'Frank Ruhl Libre', serif;
+            font-size: 16px;
+            color: #4a2c1b;
+            background-color: #fffaf0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #d4a373;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            flex: 1;
+            max-width: 200px;
+            white-space: normal;
+            line-height: 1.2;
+        }
+        button:hover {
+            background-color: #8b5a2b;
+        }
+        .hidden {
+            display: none;
+        }
+        table {
+            width: 90%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #d4a373;
+            padding: 12px;
+            text-align: right;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        th {
+            background-color: #8b5a2b;
+            color: white;
+        }
+        .share-btn {
+            display: block;
+            margin: 0;
+            background-color: #d4a373;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -20%);
+            background-color: #fffaf0;
+            padding: 20px;
+            border: 2px solid #d4a373;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+            max-width: 600px;
+        }
+        #addModal {
+            width: 300px;
+        }
+        #deleteModal {
+            width: 350px;
+        }
+        #shareModal {
+            max-width: 90vw;
+            width: 500px;
+            padding: 25px;
+            max-height: 70vh;
+        }
+        .modal input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #d4a373;
+            border-radius: 5px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            padding: 12px 25px;
+            background-color: #d4a373;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .modal-buttons button:hover {
+            background-color: #8b5a2b;
+        }
+        .share-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fffaf0;
+        }
+        .share-table th {
+            background-color: #8b5a2b;
+            color: white;
+            padding: 10px;
+            border: 1px solid #d4a373;
+            text-align: center;
+        }
+        .share-table th:first-child {
+            width: 15%;
+        }
+        .share-table th:nth-child(2) {
+            width: 45%;
+        }
+        .share-table th:nth-child(3) {
+            width: 40%;
+        }
+        .share-table td {
+            padding: 10px;
+            border: 1px solid #d4a373;
+            text-align: center;
+        }
+        .share-table td:nth-child(2) {
+            text-align: right;
+        }
+        .share-table td:nth-child(3) {
+            text-align: center;
+        }
+        .select-all-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background-color: #d4a373;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #deleteModal .select-all-btn {
+            margin-bottom: 20px; /* הגבהת הכפתור בחלון הסרת קורא */
+        }
+        .select-all-btn:hover {
+            background-color: #8b5a2b;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fffaf0;
+            padding: 25px;
+            border: 2px solid #d4a373;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            text-align: center;
+            color: #3a1f0e;
+            font-family: 'Frank Ruhl Libre', serif;
+            font-size: 16px;
+            font-weight: bold;
+            width: 400px;
+        }
+        .alert-buttons {
+            margin-top: 15px;
+        }
+        .alert-buttons button {
+            background-color: #d4a373;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .alert-buttons button:hover {
+            background-color: #8b5a2b;
+        }
+        .delete-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+        .delete-list-table td {
+            padding: 8px;
+            border: none;
+        }
+        .delete-list-table td:first-child {
+            font-size: 18px;
+            width: 70%;
+            cursor: pointer;
+        }
+        .delete-list-table td:last-child {
+            width: 30%;
+            text-align: center;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="header-row">
+        <div class="bsd">בס"ד</div>
+        <div class="dedication no-share">לעילוי נשמת רינה בת אסתר</div>
+    </div>
+    <h1 class="header">חלוקת פרקי תהילים</h1>
+    <textarea class="text-input" id="customText" placeholder="הזן מטרת החלוקה"></textarea>
+    <div class="buttons">
+        <button onclick="openAddReader()">הוספת<br>קורא</button>
+        <button onclick="openDeleteModal()">הסרת<br>קורא</button>
+        <button class="share-btn" onclick="openShareModal()">שיתוף ל-WhatsApp</button>
+        <button class="hidden" onclick="divideChapters()">חלוקת פרקים</button>
+        <button class="hidden" onclick="clearAssignedChapters()">מחיקת פרקים</button>
+    </div>
+
+    <div id="readerList">
+        <table>
+            <thead>
+                <tr>
+                    <th>שם הקורא</th>
+                    <th>פרקים</th>
+                </tr>
+            </thead>
+            <tbody id="readersTable"></tbody>
+        </table>
+    </div>
+
+    <div id="addModal" class="modal">
+        <h3>הוספת קורא</h3>
+        <input type="text" id="readerName" placeholder="שם הקורא" autofocus>
+        <div class="modal-buttons">
+            <button onclick="addReader(false)">הוסף</button>
+            <button onclick="addReader(true)">סיום</button>
+            <button onclick="closeModal('addModal')">בטל</button>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <h3>עריכת קורא</h3>
+        <input type="text" id="editReaderName" placeholder="שם חדש" autofocus>
+        <button onclick="editReader()">אישור</button>
+        <button onclick="closeModal('editModal')">בטל</button>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <h3 style="font-size: 24px; text-align: center;">הסרת קורא</h3>
+        <button class="select-all-btn" onclick="selectAllReaders()">בחר את כולם</button>
+        <table class="delete-list-table" id="deleteReaderList"></table>
+        <div class="modal-buttons">
+            <button onclick="deleteSelectedReaders()">אישור</button>
+            <button onclick="closeModal('deleteModal')">בטל</button>
+        </div>
+    </div>
+
+    <div id="shareModal" class="modal">
+        <h3 style="font-size: 28px; text-align: center; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);">בחר קוראים לשיתוף</h3>
+        <button class="select-all-btn" onclick="toggleSelectAll()">בחר את כולם</button>
+        <table class="share-table">
+            <thead>
+                <tr>
+                    <th>בחירה</th>
+                    <th>שם הקורא</th>
+                    <th>פרקים</th>
+                </tr>
+            </thead>
+            <tbody id="shareTable"></tbody>
+        </table>
+        <div class="modal-buttons">
+            <button onclick="shareSelectedViaWhatsApp()">שיתוף</button>
+            <button onclick="closeModal('shareModal')">בטל</button>
+        </div>
+    </div>
+
+    <div class="overlay"></div>
+    <div id="alertBox" class="alert">
+        <div id="alertMessage"></div>
+        <div class="alert-buttons" id="alertButtons"></div>
+    </div>
+
+    <script>
+        let readers = JSON.parse(localStorage.getItem('readersList')) || [];
+        let editReaderTarget = null;
+        let confirmCallback = null;
+
+        const psalmWordCounts = [
+            57, 76, 63, 68, 100, 74, 126, 65, 152, 150, 63, 72, 48, 63, 44, 78, 118, 344, 
+            113, 62, 93, 224, 50, 81, 133, 74, 127, 79, 81, 88, 197, 99, 137, 139, 203, 
+            82, 258, 146, 110, 167, 105, 114, 47, 172, 138, 88, 64, 101, 146, 149, 138, 
+            82, 65, 59, 176, 107, 94, 86, 137, 103, 60, 94, 81, 75, 102, 132, 49, 294, 
+            252, 43, 177, 141, 175, 176, 77, 78, 144, 473, 117, 124, 111, 51, 109, 101, 
+            84, 128, 47, 130, 345, 126, 99, 101, 41, 147, 77, 95, 83, 68, 77, 38, 71, 
+            184, 141, 234, 258, 288, 260, 85, 201, 48, 67, 71, 50, 47, 118, 109, 12, 
+            177, 121, 123, 135, 138, 130, 122, 181, 42, 46, 57, 36, 54, 43, 46, 49, 
+            43, 51, 47, 27, 110, 32, 21, 146, 159, 70, 66, 164, 110, 83, 69, 103, 
+            120, 132, 75, 126, 89, 56, 33
+        ];
+        const hebrewLetters = ["א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט", "י", "יא", "יב", "יג", "יד", "טו", "טז", "יז", "יח", "יט", "כ", "כא", "כב", "כג", "כד", "כה", "כו", "כז", "כח", "כט", "ל", "לא", "לב", "לג", "לד", "לה", "לו", "לז", "לח", "לט", "מ", "מא", "מב", "מג", "מד", "מה", "מו", "מז", "מח", "מט", "נ", "נא", "נב", "נג", "נד", "נה", "נו", "נז", "נח", "נט", "ס", "סא", "סב", "סג", "סד", "סה", "סו", "סז", "סח", "סט", "ע", "עא", "עב", "עג", "עד", "עה", "עו", "עז", "עח", "עט", "פ", "פא", "פב", "פג", "פד", "פה", "פו", "פז", "פח", "פט", "צ", "צא", "צב", "צג", "צד", "צה", "צו", "צז", "צח", "צט", "ק", "קא", "קב", "קג", "קד", "קה", "קו", "קז", "קח", "קט", "קי", "קיא", "קיב", "קיג", "קיד", "קטו", "קטז", "קיז", "קיח"];
+        const psalm119Sections = [
+            "קיט א-כד", "קיט כה-מח", "קיט מט-עב", "קיט עג-צו", "קיט צז-קכ", "קיט קכא-קמד", "קיט קמה-קעו"
+        ];
+        const psalm120To150 = ["קכ", "קכא", "קכב", "קכג", "קכד", "קכה", "קכו", "קכז", "קכח", "קכט", "קל", "קלא", "קלב", "קלג", "קלד", "קלה", "קלו", "קלז", "קלח", "קלט", "קמ", "קמא", "קמב", "קמג", "קמד", "קמה", "קמו", "קמז", "קמח", "קמט", "קנ"];
+
+        function openAddReader() {
+            document.getElementById("readerName").value = "";
+            document.getElementById("addModal").style.display = "block";
+            const readerNameInput = document.getElementById("readerName");
+            readerNameInput.focus();
+            readerNameInput.click();
+            document.querySelector('.overlay').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            document.querySelector('.overlay').style.display = 'none';
+        }
+
+        function showAlert(message, isConfirm = false) {
+            const alertBox = document.getElementById("alertBox");
+            const alertMessage = document.getElementById("alertMessage");
+            const alertButtons = document.getElementById("alertButtons");
+            alertMessage.textContent = message;
+            alertButtons.innerHTML = "";
+            if (isConfirm) {
+                alertButtons.innerHTML = `
+                    <button onclick="confirmDelete(true)">כן</button>
+                    <button onclick="confirmDelete(false)">לא</button>
+                `;
+                alertBox.style.display = "block";
+            } else {
+                alertBox.style.display = "block";
+                setTimeout(() => alertBox.style.display = "none", 3000);
+            }
+        }
+
+        function confirmDelete(result) {
+            const alertBox = document.getElementById("alertBox");
+            alertBox.style.display = "none";
+            if (confirmCallback) {
+                confirmCallback(result);
+                confirmCallback = null;
+            }
+        }
+
+        function addReader(closeAfterAdd) {
+            const name = document.getElementById("readerName").value.trim();
+            if (!name) {
+                if (closeAfterAdd) closeModal("addModal");
+                return;
+            }
+            if (readers.some(r => r.name === name)) {
+                showAlert("שם זה כבר קיים, אנא בחר שם אחר.");
+                return;
+            }
+            readers.push({ name, assignedChapters: [] });
+            saveData();
+            divideChapters();
+            updateTable();
+            if (closeAfterAdd) {
+                closeModal("addModal");
+            } else {
+                document.getElementById("readerName").value = "";
+                document.getElementById("readerName").focus();
+            }
+        }
+
+        function editReader() {
+            const newName = document.getElementById("editReaderName").value.trim();
+            if (newName && editReaderTarget) {
+                if (readers.some(r => r.name === newName && r !== editReaderTarget)) {
+                    showAlert("שם זה כבר קיים, אנא בחר שם אחר.");
+                    return;
+                }
+                editReaderTarget.name = newName;
+                saveData();
+                updateTable();
+                closeModal("editModal");
+            }
+        }
+
+        function openDeleteModal() {
+            const deleteList = document.getElementById("deleteReaderList");
+            deleteList.innerHTML = "";
+            if (readers.length > 0) {
+                readers.forEach(reader => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td onclick="toggleCheckbox(this)">${reader.name}</td>
+                        <td><input type="checkbox" name="deleteReader" value="${reader.name}"></td>
+                    `;
+                    deleteList.appendChild(row);
+                });
+            } else {
+                deleteList.innerHTML = "<tr><td colspan='2'>אין קוראים להסרה</td></tr>";
+            }
+            document.getElementById("deleteModal").style.display = "block";
+            document.querySelector('.overlay').style.display = 'block';
+        }
+
+        function toggleCheckbox(element) {
+            const checkbox = element.parentElement.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.checked = !checkbox.checked;
+        }
+
+        function selectAllReaders() {
+            const checkboxes = document.querySelectorAll('input[name="deleteReader"]');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        }
+
+        function deleteSelectedReaders() {
+            const checkboxes = document.querySelectorAll('input[name="deleteReader"]:checked');
+            if (checkboxes.length > 0) {
+                showAlert("האם אתה בטוח שברצונך למחוק את הקוראים שנבחרו?", true);
+                confirmCallback = (result) => {
+                    if (result) {
+                        const namesToDelete = Array.from(checkboxes).map(cb => cb.value);
+                        readers = readers.filter(reader => !namesToDelete.includes(reader.name));
+                        saveData();
+                        updateTable();
+                        closeModal('deleteModal');
+                        showAlert("הקוראים שנבחרו נמחקו בהצלחה.");
+                        if (readers.length > 0) divideChapters();
+                    } else {
+                        closeModal('deleteModal');
+                    }
+                };
+            } else {
+                showAlert("אנא בחר לפחות קורא אחד להסרה.", true);
+                confirmCallback = () => closeModal('deleteModal');
+            }
+        }
+
+        function numberToHebrew(num) {
+            if (num >= 119 && num <= 125) {
+                return psalm119Sections[num - 119];
+            }
+            if (num > 125) {
+                return psalm120To150[num - 126];
+            }
+            return hebrewLetters[num - 1];
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById("readersTable");
+            tableBody.innerHTML = "";
+
+            readers.forEach(reader => {
+                const row = document.createElement("tr");
+                let chaptersText = "";
+                if (reader.assignedChapters && reader.assignedChapters.length === 2 && reader.assignedChapters[0] && reader.assignedChapters[1]) {
+                    chaptersText = numberToHebrew(reader.assignedChapters[0]) + " - " + numberToHebrew(reader.assignedChapters[1]);
+                } else {
+                    chaptersText = "טרם חולק";
+                }
+                row.innerHTML = `<td onclick="openEditModal('${reader.name}')">${reader.name}</td><td>${chaptersText}</td>`;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function openEditModal(name) {
+            if (name) {
+                const reader = readers.find(r => r.name === name);
+                if (reader) {
+                    document.getElementById("editReaderName").value = reader.name;
+                    document.getElementById("editModal").style.display = "block";
+                    document.querySelector('.overlay').style.display = 'block';
+                    editReaderTarget = reader;
+                }
+            }
+        }
+
+        function divideChapters() {
+            readers.forEach(reader => {
+                reader.assignedChapters = [];
+            });
+
+            if (readers.length === 0) {
+                updateTable();
+                return;
+            }
+
+            const totalWords = 17273;
+            const wordsPerReader = totalWords / readers.length;
+            const threshold = wordsPerReader - 50;
+
+            let currentChapterIndex = 0;
+            let currentWordCount = 0;
+
+            for (let i = 0; i < readers.length && currentChapterIndex < psalmWordCounts.length; i++) {
+                const reader = readers[i];
+                let startChapter = currentChapterIndex + 1;
+                currentWordCount = 0;
+
+                while (currentChapterIndex < psalmWordCounts.length && currentWordCount < threshold) {
+                    currentWordCount += psalmWordCounts[currentChapterIndex];
+                    currentChapterIndex++;
+                }
+
+                if (currentChapterIndex > startChapter - 1) {
+                    reader.assignedChapters = [startChapter, currentChapterIndex];
+                }
+            }
+
+            if (currentChapterIndex < psalmWordCounts.length && readers.length > 0) {
+                readers[readers.length - 1].assignedChapters = [
+                    readers[readers.length - 1].assignedChapters[0] || 1,
+                    psalmWordCounts.length
+                ];
+            }
+
+            saveData();
+            updateTable();
+        }
+
+        function clearAssignedChapters() {
+            readers.forEach(reader => {
+                reader.assignedChapters = [];
+            });
+            saveData();
+            updateTable();
+            showAlert("כל הפרקים המוקצים נמחקו.");
+        }
+
+        function saveData() {
+            localStorage.setItem('readersList', JSON.stringify(readers));
+        }
+
+        function openShareModal() {
+            const shareTable = document.getElementById("shareTable");
+            shareTable.innerHTML = "";
+            if (readers.length > 0) {
+                readers.forEach(reader => {
+                    const chaptersText = reader.assignedChapters && reader.assignedChapters.length === 2 && reader.assignedChapters[0] && reader.assignedChapters[1]
+                        ? `${numberToHebrew(reader.assignedChapters[0])} - ${numberToHebrew(reader.assignedChapters[1])}`
+                        : "טרם חולק";
+                    shareTable.innerHTML += `
+                        <tr>
+                            <td><input type="checkbox" name="shareRow" value="${reader.name}"></td>
+                            <td onclick="toggleRowCheckbox(this)">${reader.name}</td>
+                            <td>${chaptersText}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                shareTable.innerHTML = "<tr><td colspan='3'>אין קוראים לשיתוף</td></tr>";
+            }
+            document.getElementById("shareModal").style.display = "block";
+            document.querySelector('.overlay').style.display = 'block';
+        }
+
+        function toggleSelectAll() {
+            const checkboxes = document.querySelectorAll('input[name="shareRow"]');
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            checkboxes.forEach(checkbox => checkbox.checked = !allChecked);
+        }
+
+        function toggleRowCheckbox(element) {
+            const checkbox = element.parentElement.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.checked = !checkbox.checked;
+        }
+
+        async function shareSelectedViaWhatsApp() {
+            const selectedRows = Array.from(document.querySelectorAll('input[name="shareRow"]:checked'))
+                .map(checkbox => checkbox.parentElement.parentElement);
+
+            if (selectedRows.length === 0 && readers.length > 0) {
+                showAlert("אנא בחר לפחות קורא אחד לשיתוף.", true);
+                confirmCallback = () => closeModal('shareModal');
+                return;
+            }
+
+            const tableContainer = document.getElementById("readerList");
+            const title = "חלוקת פרקי תהילים";
+            const customText = document.getElementById("customText").value.trim();
+
+            const tempContainer = document.createElement("div");
+            tempContainer.style.backgroundColor = "#fffaf0";
+            tempContainer.style.padding = "20px";
+            tempContainer.style.borderRadius = "10px";
+            tempContainer.style.maxWidth = "90%";
+            tempContainer.style.width = "500px";
+            tempContainer.style.direction = "rtl";
+            tempContainer.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.1)";
+            tempContainer.style.fontFamily = "'Frank Ruhl Libre', serif";
+            tempContainer.style.position = "relative";
+            tempContainer.style.margin = "0 auto";
+
+            // הסתרת האלמנטים עם מחלקת no-share לפני יצירת התמונה
+            const noShareElements = document.querySelectorAll('.no-share');
+            noShareElements.forEach(element => {
+                element.style.display = 'none';
+            });
+
+            let content = `
+                <div style="position: absolute; top: 10px; right: 10px; font-size: 18px; color: #8b5a2b; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);">בס"ד</div>
+                <h2 style="color: #8b5a2b; text-align: center; font-size: 24px; margin-bottom: 20px;">${title}</h2>
+            `;
+            if (customText) {
+                content += `
+                    <p style="color: #3a1f0e; font-size: 20px; font-weight: bold; text-align: right; margin-bottom: 20px; line-height: 1.5; max-width: 100%; word-break: break-word;">${customText}</p>
+                `;
+            }
+            content += `
+                <table style="width: 100%; border-collapse: collapse; background-color: white;">
+                    <thead>
+                        <tr style="background-color: #8b5a2b; color: white;">
+                            <th style="padding: 12px; border: 1px solid #d4a373;">שם הקורא</th>
+                            <th style="padding: 12px; border: 1px solid #d4a373;">פרקים</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (selectedRows.length > 0) {
+                selectedRows.forEach(row => {
+                    const name = row.querySelector("td:nth-child(2)").textContent;
+                    const chapters = row.querySelector("td:nth-child(3)").textContent;
+                    content += `
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #d4a373;">${name}</td>
+                            <td style="padding: 12px; border: 1px solid #d4a373;">${chapters}</td>
+                        </tr>
+                    `;
+                });
+            } else if (readers.length > 0) {
+                readers.forEach(reader => {
+                    const chaptersText = reader.assignedChapters && reader.assignedChapters.length === 2 && reader.assignedChapters[0] && reader.assignedChapters[1]
+                        ? `${numberToHebrew(reader.assignedChapters[0])} - ${numberToHebrew(reader.assignedChapters[1])}`
+                        : "טרם חולק";
+                    content += `
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #d4a373;">${reader.name}</td>
+                            <td style="padding: 12px; border: 1px solid #d4a373;">${chaptersText}</td>
+                        </tr>
+                    `;
+                });
+            }
+            content += `
+                    </tbody>
+                </table>
+            `;
+            tempContainer.innerHTML = content;
+
+            document.body.appendChild(tempContainer);
+
+            try {
+                const canvas = await html2canvas(tempContainer);
+                const imageData = canvas.toDataURL("image/png");
+
+                if (navigator.share) {
+                    const blob = await (await fetch(imageData)).blob();
+                    const file = new File([blob], "tehillim_division.png", { type: "image/png" });
+                    await navigator.share({
+                        files: [file],
+                        title: title,
+                    });
+                } else {
+                    const link = document.createElement("a");
+                    link.href = imageData;
+                    link.download = "tehillim_division.png";
+                    link.click();
+                    showAlert("שמור את התמונה ושלח אותה ידנית ב-WhatsApp");
+                }
+            } catch (error) {
+                console.error("שגיאה בשיתוף:", error);
+                showAlert("אירעה שגיאה בשיתוף התמונה");
+            } finally {
+                // החזרת האלמנטים שהוסתרו לתצוגה
+                noShareElements.forEach(element => {
+                    element.style.display = '';
+                });
+                document.body.removeChild(tempContainer);
+                closeModal('shareModal');
+            }
+        }
+
+        window.onload = () => {
+            updateTable();
+            if (readers.length > 0) divideChapters();
+        };
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'922be8a37e16b0d5',t:'MTc0MjM3NjE4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
